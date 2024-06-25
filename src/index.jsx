@@ -5,9 +5,9 @@ import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 
 function App() {
   const getItems = (count, colsId) =>
-    Array.from({ length: count }, (v, k) => k).map((k) => ({
-      id: `col-${colsId}-item-${k}`,
-      content: `col-${colsId}-item ${k}`,
+    Array.from({ length: count }, (_, k) => k).map((k) => ({
+      id: `col-${colsId}-item-${k + 1}`,
+      content: `col-${colsId}-item ${k + 1}`,
     }));
 
   const columnOrder = ["column-1", "column-2", "column-3", "column-4"];
@@ -41,19 +41,42 @@ function App() {
     return result;
   };
 
-  const onDragEnd = useCallback((result) => {
-    if (!result.destination) {
-      return;
-    }
+  const onDragEnd = useCallback(
+    (result) => {
+      const { destination, source } = result;
+      if (!destination) {
+        return;
+      }
 
-    const newItems = reorder(
-      items,
-      result.source.index,
-      result.destination.index,
-    );
+      if (
+        destination.droppableId === source.droppableId &&
+        destination.index === source.index
+      ) {
+        return; // 출발지, 도착지 같으면 return
+      }
 
-    setData(newItems);
-  }, []);
+      const startCol = columns[source.droppableId]; // 출발 컬럼
+      const finishCol = columns[destination.droppableId]; // 도착 컬럼
+
+      // 같은 column일 때
+      if (startCol.id === finishCol.id) {
+        const newContents = reorder(
+          startCol.contents,
+          source.index,
+          destination.index,
+        );
+        const newColumn = {
+          ...startCol,
+          contents: newContents,
+        };
+        setColumns({
+          ...columns,
+          [newColumn.id]: newColumn,
+        });
+      }
+    },
+    [columns],
+  );
 
   return (
     <DragDropContext onDragEnd={onDragEnd}>
