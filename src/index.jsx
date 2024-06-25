@@ -55,6 +55,12 @@ function App() {
         return; // 출발지, 도착지 같으면 return
       }
 
+      // 짝수 아이템이 다른 짝수 아이템 앞으로 이동 제약
+      if ((source.index + 1) % 2 === 0)
+        if ((destination.index + 1) % 2 !== 0) {
+          return;
+        }
+
       const startCol = columns[source.droppableId]; // 출발 컬럼
       const finishCol = columns[destination.droppableId]; // 도착 컬럼
 
