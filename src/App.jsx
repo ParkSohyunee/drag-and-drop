@@ -2,6 +2,14 @@ import React, { useState, useCallback } from "react";
 import { DragDropContext } from "react-beautiful-dnd";
 import Column from "./components/Column";
 
+/**
+ TODO
+ [x] 컬럼 간 아이템 이동 기능
+ [ ] 컬럼 이동 제약 조건 설정
+ [ ] 제약이 있을 때 스타일링
+ [ ] 멀티 드래그 구현
+ */
+
 export default function App() {
   const getItems = (count, colsId) =>
     Array.from({ length: count }, (_, k) => k).map((k) => ({
@@ -42,7 +50,7 @@ export default function App() {
 
   const onDragEnd = useCallback(
     (result) => {
-      const { destination, source } = result;
+      const { destination, source, draggableId } = result;
       if (!destination) {
         return;
       }
@@ -77,6 +85,29 @@ export default function App() {
         setColumns({
           ...columns,
           [newColumn.id]: newColumn,
+        });
+      } else {
+        const startContents = Array.from(startCol.contents);
+        startContents.splice(source.index, 1);
+        const newStart = {
+          ...startCol,
+          contents: startContents,
+        };
+
+        const finishContents = Array.from(finishCol.contents);
+        finishContents.splice(destination.index, 0, {
+          id: draggableId,
+          content: draggableId,
+        });
+        const newFinish = {
+          ...finishCol,
+          contents: finishContents,
+        };
+
+        setColumns({
+          ...columns,
+          [newStart.id]: newStart,
+          [newFinish.id]: newFinish,
         });
       }
     },
