@@ -27,12 +27,12 @@ function App() {
       const newItems = reorder(
         items,
         result.source.index,
-        result.destination.index
+        result.destination.index,
       );
 
       setItems(newItems);
     },
-    [items]
+    [items],
   );
 
   return (
@@ -53,7 +53,7 @@ function App() {
                     {...provided.dragHandleProps}
                     style={getItemStyle(
                       snapshot.isDragging,
-                      provided.draggableProps.style
+                      provided.draggableProps.style,
                     )}
                   >
                     {item.content}
@@ -89,5 +89,5 @@ const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
     <App />
-  </React.StrictMode>
+  </React.StrictMode>,
 );
