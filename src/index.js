@@ -1,3 +1,4 @@
+import "./styles/globals.css";
 import React, { useState, useCallback } from "react";
 import ReactDOM from "react-dom/client";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
