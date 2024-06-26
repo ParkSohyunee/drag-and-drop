@@ -2,55 +2,21 @@ import React, { useState, useCallback } from "react";
 import { DragDropContext } from "react-beautiful-dnd";
 
 import Column from "./components/Column";
+import { columnOrder, initialData, initialSelectedItems } from "./data";
 
 export default function App() {
-  const getItems = (count, colsId) =>
-    Array.from({ length: count }, (_, k) => k).map((k) => ({
-      id: `col-${colsId}-item-${k + 1}`,
-      content: `col-${colsId}-item ${k + 1}`,
-    }));
-
-  const columnOrder = ["column-1", "column-2", "column-3", "column-4"];
-
-  const initialData = {
-    "column-1": {
-      id: "column-1",
-      contents: getItems(10, 1),
-    },
-    "column-2": {
-      id: "column-2",
-      contents: getItems(10, 2),
-    },
-    "column-3": {
-      id: "column-3",
-      contents: getItems(10, 3),
-    },
-    "column-4": {
-      id: "column-4",
-      contents: getItems(10, 4),
-    },
-  };
-
   const [columns, setColumns] = useState(initialData);
   const [startIndex, setStartIndex] = useState(null);
-  const [selectedItems, setSelectedItems] = useState({
-    "column-1": [],
-    "column-2": [],
-    "column-3": [],
-    "column-4": [],
-  });
+  const [selectedItems, setSelectedItems] = useState(initialSelectedItems);
 
   const reorder = (list, selectedItems, startIndex, endIndex) => {
     let result = [...list];
-    const detItem = list[endIndex].id;
-    const removeItems = selectedItems.map((id) =>
-      result.find((item) => item.id === id),
-    );
+    const destinationItem = list[endIndex];
 
     if (selectedItems.length > 0) {
-      result = result.filter((i) => !selectedItems.includes(i.id));
-      const target = result.findIndex((item) => item.id === detItem);
-      removeItems.forEach((item, index) => {
+      result = result.filter((item) => !selectedItems.includes(item));
+      const target = result.findIndex((item) => item === destinationItem);
+      selectedItems.forEach((item, index) => {
         result.splice(target + index, 0, item);
       });
     } else {
@@ -101,6 +67,7 @@ export default function App() {
           source.index,
           destination.index,
         );
+        console.log(newContents);
         const newColumn = {
           ...startCol,
           contents: newContents,
@@ -110,31 +77,26 @@ export default function App() {
           [newColumn.id]: newColumn,
         });
       } else {
-        const removeItems = selectedItems[startCol.id].map((id) =>
-          startCol.contents.find((item) => item.id === id),
-        );
+        const itemToMove = selectedItems[startCol.id];
+        let startContents = startCol.contents;
 
-        let startContents = [...startCol.contents];
-        if (removeItems.length > 0) {
-          startContents = startContents.filter(
-            (item) => !selectedItems[startCol.id].includes(item.id),
+        if (itemToMove.length > 0) {
+          startContents = startCol.contents.filter(
+            (item) => !selectedItems[startCol.id].includes(item),
           );
         } else {
-          startContents.splice(source.index, 1);
+          startCol.contents.splice(source.index, 1);
         }
         const newStart = {
           ...startCol,
           contents: startContents,
         };
 
-        const finishContents = [...finishCol.contents];
-        if (removeItems.length > 0) {
-          finishContents.splice(destination.index, 0, ...removeItems);
+        const finishContents = finishCol.contents;
+        if (itemToMove.length > 0) {
+          finishContents.splice(destination.index, 0, ...itemToMove);
         } else {
-          finishContents.splice(destination.index, 0, {
-            id: draggableId,
-            content: draggableId,
-          });
+          finishContents.splice(destination.index, 0, draggableId);
         }
 
         const newFinish = {
@@ -148,12 +110,7 @@ export default function App() {
           [newFinish.id]: newFinish,
         });
       }
-      setSelectedItems({
-        "column-1": [],
-        "column-2": [],
-        "column-3": [],
-        "column-4": [],
-      });
+      setSelectedItems(initialSelectedItems);
     },
     [columns, selectedItems],
   );

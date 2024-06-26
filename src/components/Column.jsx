@@ -1,6 +1,8 @@
 import React from "react";
 import { Draggable, Droppable } from "react-beautiful-dnd";
 
+import { items } from "../data";
+
 export default function Column({
   columnOrder,
   columns,
@@ -21,7 +23,8 @@ export default function Column({
   };
 
   /** 각 컬럼마다 선택한 아이템을 담는 이벤트 핸들러 */
-  const handleMultiSelect = (item) => () => {
+  const handleMultiSelect = (currentItem) => () => {
+    // 다른 컬럼에 있는 아이템 클릭시 초기화
     for (const key in selectedItems) {
       if (key !== columnOrder) {
         selectedItems[key] = [];
@@ -29,14 +32,14 @@ export default function Column({
     }
 
     if (!selectedItems[columnOrder]) {
-      setSelectedItems({ ...selectedItems, [columnOrder]: [item.id] });
+      setSelectedItems({ ...selectedItems, [columnOrder]: [currentItem] });
       return;
     }
 
-    const isSelected = selectedItems[columnOrder].includes(item.id);
+    const isSelected = selectedItems[columnOrder].includes(currentItem);
     if (isSelected) {
       const filteredItem = selectedItems[columnOrder].filter(
-        (id) => id !== item.id,
+        (item) => item !== currentItem,
       );
       setSelectedItems({
         ...selectedItems,
@@ -45,7 +48,7 @@ export default function Column({
     } else {
       setSelectedItems({
         ...selectedItems,
-        [columnOrder]: [...selectedItems[columnOrder], item.id],
+        [columnOrder]: [...selectedItems[columnOrder], currentItem],
       });
     }
   };
@@ -66,7 +69,7 @@ export default function Column({
           `}
         >
           {columns[columnOrder].contents.map((item, index) => (
-            <Draggable key={item.id} draggableId={item.id} index={index}>
+            <Draggable key={item} draggableId={item} index={index}>
               {(provided, { isDragging, draggingOver }) => (
                 <div
                   onClick={handleMultiSelect(item)}
@@ -78,23 +81,22 @@ export default function Column({
                   ${getItemBgColor({
                     isDragging,
                     draggingOver,
-                    isSelected: selectedItems[columnOrder].includes(item.id),
+                    isSelected: selectedItems[columnOrder].includes(item),
                   })}
                   `}
                 >
-                  {item.content}
-                  {isDragging &&
-                    selectedItems[columnOrder].includes(item.id) && (
-                      <div
-                        className={`
+                  {items[item].content}
+                  {isDragging && selectedItems[columnOrder].includes(item) && (
+                    <div
+                      className={`
                         absolute -top-2 -right-2 w-[30px] h-[30px] 
                         rounded-full bg-white text-center leading-[30px] 
                         text-sm text-slate-800 font-bold
                         `}
-                      >
-                        {selectedItems[columnOrder].length}
-                      </div>
-                    )}
+                    >
+                      {selectedItems[columnOrder].length}
+                    </div>
+                  )}
                 </div>
               )}
             </Draggable>
