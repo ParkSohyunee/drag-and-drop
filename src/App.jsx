@@ -50,14 +50,18 @@ export default function App() {
         return; // 출발지, 도착지 같으면 return
       }
 
-      // 짝수 아이템이 다른 짝수 아이템 앞으로 이동 제약
-      if ((source.index + 1) % 2 === 0)
-        if ((destination.index + 1) % 2 !== 0) {
-          return;
-        }
-
       const startCol = columns[source.droppableId]; // 출발 컬럼
       const finishCol = columns[destination.droppableId]; // 도착 컬럼
+
+      // 짝수 아이템이 다른 짝수 아이템 앞으로 이동 금지
+      if (Number(draggableId.slice(-1)) % 2 === 0) {
+        if (
+          finishCol.contents.length > 0 &&
+          finishCol.contents[destination.index - 1].slice(-1) % 2 === 0
+        ) {
+          return;
+        }
+      }
 
       // 같은 column일 때
       if (startCol.id === finishCol.id) {
@@ -67,7 +71,6 @@ export default function App() {
           source.index,
           destination.index,
         );
-        console.log(newContents);
         const newColumn = {
           ...startCol,
           contents: newContents,
