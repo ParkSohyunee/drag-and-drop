@@ -1,0 +1,177 @@
+import React, { useState, useCallback } from "react";
+import { DragDropContext } from "react-beautiful-dnd";
+
+import Column from "./components/Column";
+
+export default function App() {
+  const getItems = (count, colsId) =>
+    Array.from({ length: count }, (_, k) => k).map((k) => ({
+      id: `col-${colsId}-item-${k + 1}`,
+      content: `col-${colsId}-item ${k + 1}`,
+    }));
+
+  const columnOrder = ["column-1", "column-2", "column-3", "column-4"];
+
+  const initialData = {
+    "column-1": {
+      id: "column-1",
+      contents: getItems(10, 1),
+    },
+    "column-2": {
+      id: "column-2",
+      contents: getItems(10, 2),
+    },
+    "column-3": {
+      id: "column-3",
+      contents: getItems(10, 3),
+    },
+    "column-4": {
+      id: "column-4",
+      contents: getItems(10, 4),
+    },
+  };
+
+  const [columns, setColumns] = useState(initialData);
+  const [startIndex, setStartIndex] = useState(null);
+  const [selectedItems, setSelectedItems] = useState({
+    "column-1": [],
+    "column-2": [],
+    "column-3": [],
+    "column-4": [],
+  });
+
+  const reorder = (list, selectedItems, startIndex, endIndex) => {
+    let result = [...list];
+    const detItem = list[endIndex].id;
+    const removeItems = selectedItems.map((id) =>
+      result.find((item) => item.id === id),
+    );
+
+    if (selectedItems.length > 0) {
+      result = result.filter((i) => !selectedItems.includes(i.id));
+      const target = result.findIndex((item) => item.id === detItem);
+      removeItems.forEach((item, index) => {
+        result.splice(target + index, 0, item);
+      });
+    } else {
+      const [removed] = result.splice(startIndex, 1);
+      result.splice(endIndex, 0, removed);
+    }
+    return result;
+  };
+
+  const onDragStart = useCallback(
+    (start) => {
+      const homeIndex = columnOrder.indexOf(start.source.droppableId);
+      setStartIndex(homeIndex);
+    },
+    [startIndex],
+  );
+
+  const onDragEnd = useCallback(
+    (result) => {
+      setStartIndex(null);
+
+      const { destination, source, draggableId } = result;
+      if (!destination) {
+        return;
+      }
+
+      if (
+        destination.droppableId === source.droppableId &&
+        destination.index === source.index
+      ) {
+        return; // 출발지, 도착지 같으면 return
+      }
+
+      // 짝수 아이템이 다른 짝수 아이템 앞으로 이동 제약
+      if ((source.index + 1) % 2 === 0)
+        if ((destination.index + 1) % 2 !== 0) {
+          return;
+        }
+
+      const startCol = columns[source.droppableId]; // 출발 컬럼
+      const finishCol = columns[destination.droppableId]; // 도착 컬럼
+
+      // 같은 column일 때
+      if (startCol.id === finishCol.id) {
+        const newContents = reorder(
+          startCol.contents,
+          selectedItems[startCol.id],
+          source.index,
+          destination.index,
+        );
+        const newColumn = {
+          ...startCol,
+          contents: newContents,
+        };
+        setColumns({
+          ...columns,
+          [newColumn.id]: newColumn,
+        });
+      } else {
+        const removeItems = selectedItems[startCol.id].map((id) =>
+          startCol.contents.find((item) => item.id === id),
+        );
+
+        let startContents = [...startCol.contents];
+        if (removeItems.length > 0) {
+          startContents = startContents.filter(
+            (item) => !selectedItems[startCol.id].includes(item.id),
+          );
+        } else {
+          startContents.splice(source.index, 1);
+        }
+        const newStart = {
+          ...startCol,
+          contents: startContents,
+        };
+
+        const finishContents = [...finishCol.contents];
+        if (removeItems.length > 0) {
+          finishContents.splice(destination.index, 0, ...removeItems);
+        } else {
+          finishContents.splice(destination.index, 0, {
+            id: draggableId,
+            content: draggableId,
+          });
+        }
+
+        const newFinish = {
+          ...finishCol,
+          contents: finishContents,
+        };
+
+        setColumns({
+          ...columns,
+          [newStart.id]: newStart,
+          [newFinish.id]: newFinish,
+        });
+      }
+      setSelectedItems({
+        "column-1": [],
+        "column-2": [],
+        "column-3": [],
+        "column-4": [],
+      });
+    },
+    [columns, selectedItems],
+  );
+
+  return (
+    <DragDropContext onDragEnd={onDragEnd} onDragStart={onDragStart}>
+      <div className="flex">
+        {columnOrder.map((order, index) => (
+          <Column
+            key={order}
+            columnOrder={order}
+            columns={columns}
+            isDropDisabled={startIndex === 0 && index === 2}
+            selectedItems={selectedItems}
+            setSelectedItems={setSelectedItems}
+          />
+        ))}
+      </div>
+    </DragDropContext>
+  );
+}
