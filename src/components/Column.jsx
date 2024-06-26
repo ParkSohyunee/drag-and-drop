@@ -8,6 +8,18 @@ export default function Column({
   selectedItems,
   setSelectedItems,
 }) {
+  const getItemBgColor = ({ isDragging, draggingOver, isSelected }) => {
+    let bgColor = "";
+    if (isDragging) {
+      bgColor = draggingOver
+        ? "bg-blue-300 shadow-item"
+        : "bg-red-300 shadow-item";
+    } else {
+      bgColor = isSelected ? "bg-blue-300" : "bg-slate-300";
+    }
+    return bgColor;
+  };
+
   /** 각 컬럼마다 선택한 아이템을 담는 이벤트 핸들러 */
   const handleMultiSelect = (item) => () => {
     for (const key in selectedItems) {
@@ -63,17 +75,11 @@ export default function Column({
                   {...provided.dragHandleProps}
                   className={`
                   p-4 mb-2 select-none transition-colors 
-                  ${
-                    selectedItems[columnOrder].includes(item.id) &&
-                    "bg-orange-300"
-                  }
-                  ${
-                    isDragging
-                      ? draggingOver
-                        ? "bg-blue-300 shadow-item"
-                        : "bg-red-300 shadow-item"
-                      : "bg-slate-300"
-                  }
+                  ${getItemBgColor({
+                    isDragging,
+                    draggingOver,
+                    isSelected: selectedItems[columnOrder].includes(item.id),
+                  })}
                   `}
                 >
                   {item.content}
