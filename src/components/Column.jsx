@@ -2,22 +2,6 @@ import React from "react";
 import { Draggable, Droppable } from "react-beautiful-dnd";
 
 export default function Column({ columnOrder, columns, isDropDisabled }) {
-  const GRID = 8;
-
-  const getItemStyle = (isDragging, draggableStyle) => ({
-    userSelect: "none",
-    padding: GRID * 2,
-    margin: `0 0 ${GRID}px 0`,
-    background: isDragging ? "lightgreen" : "grey",
-    ...draggableStyle,
-  });
-
-  const getListStyle = (isDraggingOver) => ({
-    background: isDraggingOver ? "lightblue" : "lightgrey",
-    padding: GRID,
-    width: 250,
-  });
-
   return (
     <Droppable
       key={columnOrder}
@@ -28,7 +12,10 @@ export default function Column({ columnOrder, columns, isDropDisabled }) {
         <div
           {...provided.droppableProps}
           ref={provided.innerRef}
-          style={getListStyle(snapshot.isDraggingOver)}
+          className={`
+          w-[250px] p-2 
+          ${snapshot.isDraggingOver ? "bg-blue-100" : "bg-slate-100"}
+          `}
         >
           {columns[columnOrder].contents.map((item, index) => (
             <Draggable key={item.id} draggableId={item.id} index={index}>
@@ -37,10 +24,10 @@ export default function Column({ columnOrder, columns, isDropDisabled }) {
                   ref={provided.innerRef}
                   {...provided.draggableProps}
                   {...provided.dragHandleProps}
-                  style={getItemStyle(
-                    snapshot.isDragging,
-                    provided.draggableProps.style,
-                  )}
+                  className={`
+                  p-4 mb-2 select-none
+                  ${snapshot.isDragging ? "bg-blue-300" : "bg-slate-300"}
+                  `}
                 >
                   {item.content}
                 </div>
