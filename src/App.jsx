@@ -9,21 +9,23 @@ export default function App() {
   const [startIndex, setStartIndex] = useState(null);
   const [selectedItems, setSelectedItems] = useState(initialSelectedItems);
 
+  /** 컬럼 간 아이템 이동 순서 정렬 */
   const reorder = (list, selectedItems, startIndex, endIndex) => {
     let result = [...list];
-    const destinationItem = list[endIndex];
 
-    if (selectedItems.length > 0) {
-      result = result.filter((item) => !selectedItems.includes(item));
-      const target = result.findIndex((item) => item === destinationItem);
-      selectedItems.forEach((item, index) => {
-        result.splice(target + index, 0, item);
-      });
+    const reorderResult = result.filter(
+      (item) => !selectedItems.includes(item),
+    );
+
+    if (selectedItems.length > 1) {
+      const find = reorderResult.findIndex((item) => item === list[endIndex]);
+      reorderResult.splice(find, 0, ...selectedItems);
+      return reorderResult;
     } else {
       const [removed] = result.splice(startIndex, 1);
       result.splice(endIndex, 0, removed);
+      return result;
     }
-    return result;
   };
 
   const onDragStart = useCallback(
@@ -54,11 +56,15 @@ export default function App() {
       const finishCol = columns[destination.droppableId]; // 도착 컬럼
 
       // 짝수 아이템이 다른 짝수 아이템 앞으로 이동 금지
-      if (Number(draggableId.slice(-1)) % 2 === 0) {
-        if (
-          finishCol.contents.length > 0 &&
-          finishCol.contents[destination.index - 1].slice(-1) % 2 === 0
-        ) {
+      if (
+        Number(draggableId.split("-")[1]) % 2 === 0 &&
+        finishCol.contents.length > 0
+      ) {
+        const destinationIndex =
+          destination.index === 0
+            ? finishCol.contents[destination.index].split("-")[1]
+            : finishCol.contents[destination.index - 1].split("-")[1];
+        if (destinationIndex % 2 === 0) {
           return;
         }
       }
