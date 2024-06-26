@@ -6,7 +6,7 @@ import Column from "./components/Column";
  TODO
  [x] 컬럼 간 아이템 이동 기능
  [x] 컬럼 이동 제약 조건 설정
- [ ] 제약이 있을 때 스타일링
+ [x] 제약이 있을 때 스타일링
  [ ] 멀티 드래그 구현
  */
 

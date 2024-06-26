@@ -8,25 +8,31 @@ export default function Column({ columnOrder, columns, isDropDisabled }) {
       droppableId={columnOrder}
       isDropDisabled={isDropDisabled}
     >
-      {(provided, snapshot) => (
+      {(provided, { isDraggingOver }) => (
         <div
           {...provided.droppableProps}
           ref={provided.innerRef}
           className={`
-          w-[250px] p-2 
-          ${snapshot.isDraggingOver ? "bg-blue-100" : "bg-slate-100"}
+          w-[250px] p-2 border transition-colors 
+          ${isDraggingOver ? "bg-blue-100 border-blue-500" : "bg-slate-100"}
           `}
         >
           {columns[columnOrder].contents.map((item, index) => (
             <Draggable key={item.id} draggableId={item.id} index={index}>
-              {(provided, snapshot) => (
+              {(provided, { isDragging, draggingOver }) => (
                 <div
                   ref={provided.innerRef}
                   {...provided.draggableProps}
                   {...provided.dragHandleProps}
                   className={`
-                  p-4 mb-2 select-none
-                  ${snapshot.isDragging ? "bg-blue-300" : "bg-slate-300"}
+                  p-4 mb-2 select-none transition-colors 
+                  ${
+                    isDragging
+                      ? draggingOver
+                        ? "bg-blue-300 shadow-item"
+                        : "bg-red-300 shadow-item"
+                      : "bg-slate-300"
+                  }
                   `}
                 >
                   {item.content}
