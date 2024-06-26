@@ -1,14 +1,7 @@
 import React, { useState, useCallback } from "react";
 import { DragDropContext } from "react-beautiful-dnd";
-import Column from "./components/Column";
 
-/**
- TODO
- [x] 컬럼 간 아이템 이동 기능
- [x] 컬럼 이동 제약 조건 설정
- [x] 제약이 있을 때 스타일링
- [x] 멀티 드래그 구현
- */
+import Column from "./components/Column";
 
 export default function App() {
   const getItems = (count, colsId) =>
@@ -46,9 +39,6 @@ export default function App() {
     "column-3": [],
     "column-4": [],
   });
-
-  // console.log(columns); // 삭제 예정
-  // console.log(selectedItems); // 삭제 예정
 
   const reorder = (list, selectedItems, startIndex, endIndex) => {
     let result = [...list];
