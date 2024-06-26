@@ -5,7 +5,7 @@ import Column from "./components/Column";
 /**
  TODO
  [x] 컬럼 간 아이템 이동 기능
- [ ] 컬럼 이동 제약 조건 설정
+ [x] 컬럼 이동 제약 조건 설정
  [ ] 제약이 있을 때 스타일링
  [ ] 멀티 드래그 구현
  */
@@ -39,6 +39,7 @@ export default function App() {
   };
 
   const [columns, setColumns] = useState(initialData);
+  const [startIndex, setStartIndex] = useState(null);
   console.log(columns); // 삭제 예정
 
   const reorder = (list, startIndex, endIndex) => {
@@ -48,8 +49,18 @@ export default function App() {
     return result;
   };
 
+  const onDragStart = useCallback(
+    (start) => {
+      const homeIndex = columnOrder.indexOf(start.source.droppableId);
+      setStartIndex(homeIndex);
+    },
+    [startIndex],
+  );
+
   const onDragEnd = useCallback(
     (result) => {
+      setStartIndex(null);
+
       const { destination, source, draggableId } = result;
       if (!destination) {
         return;
@@ -115,10 +126,15 @@ export default function App() {
   );
 
   return (
-    <DragDropContext onDragEnd={onDragEnd}>
+    <DragDropContext onDragEnd={onDragEnd} onDragStart={onDragStart}>
       <div className="flex">
-        {columnOrder.map((order) => (
-          <Column key={order} columnOrder={order} columns={columns} />
+        {columnOrder.map((order, index) => (
+          <Column
+            key={order}
+            columnOrder={order}
+            columns={columns}
+            isDropDisabled={startIndex === 0 && index === 2}
+          />
         ))}
       </div>
     </DragDropContext>

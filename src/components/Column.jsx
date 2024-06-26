@@ -1,7 +1,7 @@
 import React from "react";
 import { Draggable, Droppable } from "react-beautiful-dnd";
 
-export default function Column({ columnOrder, columns }) {
+export default function Column({ columnOrder, columns, isDropDisabled }) {
   const GRID = 8;
 
   const getItemStyle = (isDragging, draggableStyle) => ({
@@ -19,7 +19,11 @@ export default function Column({ columnOrder, columns }) {
   });
 
   return (
-    <Droppable key={columnOrder} droppableId={columnOrder}>
+    <Droppable
+      key={columnOrder}
+      droppableId={columnOrder}
+      isDropDisabled={isDropDisabled}
+    >
       {(provided, snapshot) => (
         <div
           {...provided.droppableProps}
