@@ -10,6 +10,12 @@ export default function Column({
 }) {
   /** 각 컬럼마다 선택한 아이템을 담는 이벤트 핸들러 */
   const handleMultiSelect = (item) => () => {
+    for (const key in selectedItems) {
+      if (key !== columnOrder) {
+        selectedItems[key] = [];
+      }
+    }
+
     if (!selectedItems[columnOrder]) {
       setSelectedItems({ ...selectedItems, [columnOrder]: [item.id] });
       return;
@@ -71,6 +77,18 @@ export default function Column({
                   `}
                 >
                   {item.content}
+                  {isDragging &&
+                    selectedItems[columnOrder].includes(item.id) && (
+                      <div
+                        className={`
+                        absolute -top-2 -right-2 w-[30px] h-[30px] 
+                        rounded-full bg-white text-center leading-[30px] 
+                        text-sm text-slate-800 font-bold
+                        `}
+                      >
+                        {selectedItems[columnOrder].length}
+                      </div>
+                    )}
                 </div>
               )}
             </Draggable>
