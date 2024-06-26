@@ -48,12 +48,25 @@ export default function App() {
   });
 
   // console.log(columns); // 삭제 예정
-  console.log(selectedItems); // 삭제 예정
+  // console.log(selectedItems); // 삭제 예정
 
-  const reorder = (list, startIndex, endIndex) => {
-    const result = Array.from(list);
-    const [removed] = result.splice(startIndex, 1);
-    result.splice(endIndex, 0, removed);
+  const reorder = (list, selectedItems, startIndex, endIndex) => {
+    let result = [...list];
+    const detItem = list[endIndex].id;
+    const removeItems = selectedItems.map((id) =>
+      result.find((item) => item.id === id),
+    );
+
+    if (selectedItems.length > 0) {
+      result = result.filter((i) => !selectedItems.includes(i.id));
+      const target = result.findIndex((item) => item.id === detItem);
+      removeItems.forEach((item, index) => {
+        result.splice(target + index, 0, item);
+      });
+    } else {
+      const [removed] = result.splice(startIndex, 1);
+      result.splice(endIndex, 0, removed);
+    }
     return result;
   };
 
@@ -94,6 +107,7 @@ export default function App() {
       if (startCol.id === finishCol.id) {
         const newContents = reorder(
           startCol.contents,
+          selectedItems[startCol.id],
           source.index,
           destination.index,
         );
@@ -106,14 +120,14 @@ export default function App() {
           [newColumn.id]: newColumn,
         });
       } else {
-        const startContents = Array.from(startCol.contents);
+        const startContents = [...startCol.contents];
         startContents.splice(source.index, 1);
         const newStart = {
           ...startCol,
           contents: startContents,
         };
 
-        const finishContents = Array.from(finishCol.contents);
+        const finishContents = [...finishCol.contents];
         finishContents.splice(destination.index, 0, {
           id: draggableId,
           content: draggableId,
@@ -129,8 +143,14 @@ export default function App() {
           [newFinish.id]: newFinish,
         });
       }
+      setSelectedItems({
+        "column-1": [],
+        "column-2": [],
+        "column-3": [],
+        "column-4": [],
+      });
     },
-    [columns],
+    [columns, selectedItems],
   );
 
   return (
