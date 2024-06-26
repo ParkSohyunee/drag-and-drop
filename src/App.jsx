@@ -7,7 +7,7 @@ import Column from "./components/Column";
  [x] 컬럼 간 아이템 이동 기능
  [x] 컬럼 이동 제약 조건 설정
  [x] 제약이 있을 때 스타일링
- [ ] 멀티 드래그 구현
+ [x] 멀티 드래그 구현
  */
 
 export default function App() {
@@ -120,18 +120,33 @@ export default function App() {
           [newColumn.id]: newColumn,
         });
       } else {
-        const startContents = [...startCol.contents];
-        startContents.splice(source.index, 1);
+        const removeItems = selectedItems[startCol.id].map((id) =>
+          startCol.contents.find((item) => item.id === id),
+        );
+
+        let startContents = [...startCol.contents];
+        if (removeItems.length > 0) {
+          startContents = startContents.filter(
+            (item) => !selectedItems[startCol.id].includes(item.id),
+          );
+        } else {
+          startContents.splice(source.index, 1);
+        }
         const newStart = {
           ...startCol,
           contents: startContents,
         };
 
         const finishContents = [...finishCol.contents];
-        finishContents.splice(destination.index, 0, {
-          id: draggableId,
-          content: draggableId,
-        });
+        if (removeItems.length > 0) {
+          finishContents.splice(destination.index, 0, ...removeItems);
+        } else {
+          finishContents.splice(destination.index, 0, {
+            id: draggableId,
+            content: draggableId,
+          });
+        }
+
         const newFinish = {
           ...finishCol,
           contents: finishContents,
