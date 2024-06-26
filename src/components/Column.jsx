@@ -1,7 +1,37 @@
 import React from "react";
 import { Draggable, Droppable } from "react-beautiful-dnd";
 
-export default function Column({ columnOrder, columns, isDropDisabled }) {
+export default function Column({
+  columnOrder,
+  columns,
+  isDropDisabled,
+  selectedItems,
+  setSelectedItems,
+}) {
+  /** 각 컬럼마다 선택한 아이템을 담는 이벤트 핸들러 */
+  const handleMultiSelect = (item) => () => {
+    if (!selectedItems[columnOrder]) {
+      setSelectedItems({ ...selectedItems, [columnOrder]: [item.id] });
+      return;
+    }
+
+    const isSelected = selectedItems[columnOrder].includes(item.id);
+    if (isSelected) {
+      const filteredItem = selectedItems[columnOrder].filter(
+        (id) => id !== item.id,
+      );
+      setSelectedItems({
+        ...selectedItems,
+        [columnOrder]: filteredItem,
+      });
+    } else {
+      setSelectedItems({
+        ...selectedItems,
+        [columnOrder]: [...selectedItems[columnOrder], item.id],
+      });
+    }
+  };
+
   return (
     <Droppable
       key={columnOrder}
@@ -21,11 +51,16 @@ export default function Column({ columnOrder, columns, isDropDisabled }) {
             <Draggable key={item.id} draggableId={item.id} index={index}>
               {(provided, { isDragging, draggingOver }) => (
                 <div
+                  onClick={handleMultiSelect(item)}
                   ref={provided.innerRef}
                   {...provided.draggableProps}
                   {...provided.dragHandleProps}
                   className={`
                   p-4 mb-2 select-none transition-colors 
+                  ${
+                    selectedItems[columnOrder].includes(item.id) &&
+                    "bg-orange-300"
+                  }
                   ${
                     isDragging
                       ? draggingOver

@@ -40,7 +40,15 @@ export default function App() {
 
   const [columns, setColumns] = useState(initialData);
   const [startIndex, setStartIndex] = useState(null);
-  console.log(columns); // 삭제 예정
+  const [selectedItems, setSelectedItems] = useState({
+    "column-1": [],
+    "column-2": [],
+    "column-3": [],
+    "column-4": [],
+  });
+
+  // console.log(columns); // 삭제 예정
+  console.log(selectedItems); // 삭제 예정
 
   const reorder = (list, startIndex, endIndex) => {
     const result = Array.from(list);
@@ -134,6 +142,8 @@ export default function App() {
             columnOrder={order}
             columns={columns}
             isDropDisabled={startIndex === 0 && index === 2}
+            selectedItems={selectedItems}
+            setSelectedItems={setSelectedItems}
           />
         ))}
       </div>
