@@ -19,13 +19,15 @@ export const ColumnDataProvider = ({ children }) => {
 
   /**
    * 컬럼에 아이템 추가 기능 함수
+   * 새롭게 생성되는 아이템은 연속된 순서를 유지
    */
   const addItemCard = (columnId) => {
-    const currentItemCount = Object.keys(columns.items).length;
-    const newItemId = `item-${currentItemCount + 1}`;
+    const [lastItemCount] = Object.keys(columns.items).slice(-1);
+    const nextItemCount = +lastItemCount.split("-")[1] + 1;
+    const newItemId = `item-${nextItemCount}`;
     const newItemInfo = {
       id: newItemId,
-      content: `item ${currentItemCount + 1}`,
+      content: `item ${nextItemCount}`,
     };
 
     return setColumns((prev) => {

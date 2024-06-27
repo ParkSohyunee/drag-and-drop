@@ -1,6 +1,8 @@
 import React from "react";
 import { Draggable } from "react-beautiful-dnd";
 
+import { useColumnDataContext } from "../context/ColumnDataContext";
+
 export default function Item({
   columnOrder,
   allItems,
@@ -9,6 +11,8 @@ export default function Item({
   selectedItems,
   setSelectedItems,
 }) {
+  const { deleteItemCard } = useColumnDataContext();
+
   const getItemBgColor = ({ isDragging, draggingOver, isSelected }) => {
     let bgColor = "";
     if (isDragging) {
@@ -52,6 +56,25 @@ export default function Item({
     }
   };
 
+  const handleDeleteItem = (columnId, itemId) => () => {
+    if (selectedItems[columnId].includes(itemId)) {
+      const filtered = selectedItems[columnId].filter(
+        (item) => item !== itemId,
+      );
+      setSelectedItems((prev) => {
+        return {
+          ...prev,
+          [columnId]: filtered,
+        };
+      });
+    }
+
+    deleteItemCard({
+      columnId,
+      itemId,
+    });
+  };
+
   return (
     <Draggable draggableId={item} index={index}>
       {(provided, { isDragging, draggingOver }) => (
@@ -61,8 +84,8 @@ export default function Item({
           {...provided.draggableProps}
           {...provided.dragHandleProps}
           className={`
-          p-4 mb-2 select-none transition-colors
-          rounded-xl shadow-item text-slate-800
+          p-4 mb-2 select-none transition-colors relative
+          rounded-xl shadow-item text-slate-800 group
           ${getItemBgColor({
             isDragging,
             draggingOver,
@@ -82,6 +105,21 @@ export default function Item({
               {selectedItems[columnOrder].length}
             </div>
           )}
+          <div
+            onClick={handleDeleteItem(columnOrder, item)}
+            className={`
+              hidden group-hover:block cursor-pointer
+              absolute -top-2 -right-2 w-6 h-6 
+              rounded-full bg-red-400 text-center leading-[30px] 
+              text-sm text-white font-bold
+              `}
+          >
+            <img
+              className="w-full h-full p-1 transi rotate-45"
+              src="/icons/close-small-white.svg"
+              alt="아이템 삭제"
+            />
+          </div>
         </div>
       )}
     </Draggable>
