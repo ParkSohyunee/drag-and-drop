@@ -61,7 +61,7 @@ export default function App() {
           destination,
           selectedItems: selectedItems[startCol.id],
         });
-        console.log(dragGroup); // 삭제 예정
+
         const newStart = {
           ...startCol,
           contents: dragGroup.updateStartCol,
@@ -71,6 +71,19 @@ export default function App() {
           ...columns,
           [newStart.id]: newStart,
         });
+
+        if (dragGroup.updateFinishCol) {
+          const newFinish = {
+            ...finishCol,
+            contents: dragGroup.updateFinishCol,
+          };
+
+          setColumns({
+            ...columns,
+            [newStart.id]: newStart,
+            [newFinish.id]: newFinish,
+          });
+        }
       } else {
         const { dragGroup } = reorderSingleDrag({
           startCol: startCol,

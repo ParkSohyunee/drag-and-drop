@@ -61,6 +61,9 @@ export const reorderSingleDrag = ({
   };
 };
 
+/**
+ * 멀티 드래그 이동 후 컬럼 item update 함수, 객체를 파라미터로 받음
+ */
 export const reorderMultiDrag = ({
   startCol,
   finishCol,
@@ -68,12 +71,12 @@ export const reorderMultiDrag = ({
   destination,
   selectedItems,
 }) => {
+  const filteredStartContents = startCol.contents.filter(
+    (item) => !selectedItems.includes(item),
+  );
+
   // 같은 컬럼 이동
   if (startCol.id === finishCol.id) {
-    const reorderResult = startCol.contents.filter(
-      (item) => !selectedItems.includes(item),
-    );
-
     const dragged = startCol.contents[source.index]; // 드래그 하는 아이템
 
     // 최종 드랍 위치를 계산하는 즉시 실행 함수
@@ -93,13 +96,24 @@ export const reorderMultiDrag = ({
       return result;
     })();
 
-    reorderResult.splice(insertAtIndex, 0, ...selectedItems);
+    filteredStartContents.splice(insertAtIndex, 0, ...selectedItems);
 
     return {
       dragGroup: {
-        updateStartCol: reorderResult,
+        updateStartCol: filteredStartContents,
         updateFinishCol: null,
       },
     };
   }
+
+  // 다른 컬럼 이동
+  let finishContents = finishCol.contents;
+  finishCol.contents.splice(destination.index, 0, ...selectedItems);
+
+  return {
+    dragGroup: {
+      updateStartCol: filteredStartContents,
+      updateFinishCol: finishContents,
+    },
+  };
 };
