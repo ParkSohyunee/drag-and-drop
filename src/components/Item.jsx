@@ -14,10 +14,10 @@ export default function Item({
     let bgColor = "";
     if (isDragging) {
       bgColor = draggingOver
-        ? "bg-blue-300 shadow-item"
-        : "bg-red-300 shadow-item";
+        ? "bg-blue-300 shadow-drag"
+        : "bg-red-300 shadow-drag";
     } else {
-      bgColor = isSelected ? "bg-orange-300" : "bg-slate-300";
+      bgColor = isSelected ? "bg-orange-300" : "bg-white";
     }
     return bgColor;
   };
@@ -62,7 +62,8 @@ export default function Item({
           {...provided.draggableProps}
           {...provided.dragHandleProps}
           className={`
-          p-4 mb-2 select-none transition-colors 
+          p-4 mb-2 select-none transition-colors
+          rounded-xl shadow-item text-slate-800
           ${getItemBgColor({
             isDragging,
             draggingOver,

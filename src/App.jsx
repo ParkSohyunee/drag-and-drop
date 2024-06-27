@@ -126,19 +126,21 @@ export default function App() {
   );
 
   return (
-    <DragDropContext onDragEnd={onDragEnd} onDragStart={onDragStart}>
-      <div className="flex">
-        {columnOrder.map((order, index) => (
-          <Column
-            key={order}
-            columnOrder={order}
-            columns={columns}
-            isDropDisabled={startIndex === 0 && index === 2}
-            selectedItems={selectedItems}
-            setSelectedItems={setSelectedItems}
-          />
-        ))}
-      </div>
-    </DragDropContext>
+    <section>
+      <DragDropContext onDragEnd={onDragEnd} onDragStart={onDragStart}>
+        <div className="flex gap-2 p-2">
+          {columnOrder.map((order, index) => (
+            <Column
+              key={order}
+              columnOrder={order}
+              columns={columns}
+              isDropDisabled={startIndex === 0 && index === 2}
+              selectedItems={selectedItems}
+              setSelectedItems={setSelectedItems}
+            />
+          ))}
+        </div>
+      </DragDropContext>
+    </section>
   );
 }
