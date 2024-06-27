@@ -31,11 +31,11 @@ export default function App() {
         destination.droppableId === source.droppableId &&
         destination.index === source.index
       ) {
-        return; // 출발지, 도착지 같으면 return
+        return;
       }
 
-      const startCol = columns[source.droppableId]; // 출발 컬럼
-      const finishCol = columns[destination.droppableId]; // 도착 컬럼
+      const startCol = columns[source.droppableId];
+      const finishCol = columns[destination.droppableId];
 
       // 짝수 아이템이 다른 짝수 아이템 앞으로 이동 금지
       if (
