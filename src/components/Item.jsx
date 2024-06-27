@@ -56,7 +56,9 @@ export default function Item({
     }
   };
 
-  const handleDeleteItem = (columnId, itemId) => () => {
+  const handleDeleteItem = (columnId, itemId) => (e) => {
+    e.stopPropagation();
+
     if (selectedItems[columnId].includes(itemId)) {
       const filtered = selectedItems[columnId].filter(
         (item) => item !== itemId,
