@@ -47,7 +47,12 @@ export default function Column({
           </div>
         )}
       </Droppable>
-      <button onClick={() => addItemCard(columnOrder)}>+ Add a card</button>
+      <button
+        onClick={() => addItemCard(columnOrder)}
+        className="w-full p-2 text-slate-800 text-sm font-medium text-start hover:bg-slate-200 rounded-lg"
+      >
+        + Add a card
+      </button>
     </div>
   );
 }
