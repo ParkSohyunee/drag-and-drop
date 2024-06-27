@@ -3,30 +3,12 @@ import { DragDropContext } from "react-beautiful-dnd";
 
 import Column from "./components/Column";
 import { columnOrder, initialData, initialSelectedItems } from "./data";
+import { reorderSingleDrag } from "./common/utils/reorder";
 
 export default function App() {
   const [columns, setColumns] = useState(initialData);
   const [startIndex, setStartIndex] = useState(null);
   const [selectedItems, setSelectedItems] = useState(initialSelectedItems);
-
-  /** 컬럼 간 아이템 이동 순서 정렬 */
-  const reorder = (list, selectedItems, startIndex, endIndex) => {
-    let result = [...list];
-
-    const reorderResult = result.filter(
-      (item) => !selectedItems.includes(item),
-    );
-
-    if (selectedItems.length > 1) {
-      const find = reorderResult.findIndex((item) => item === list[endIndex]);
-      reorderResult.splice(find, 0, ...selectedItems);
-      return reorderResult;
-    } else {
-      const [removed] = result.splice(startIndex, 1);
-      result.splice(endIndex, 0, removed);
-      return result;
-    }
-  };
 
   const onDragStart = useCallback(
     (start) => {
@@ -69,56 +51,42 @@ export default function App() {
         }
       }
 
-      // 같은 column일 때
-      if (startCol.id === finishCol.id) {
-        const newContents = reorder(
-          startCol.contents,
-          selectedItems[startCol.id],
-          source.index,
-          destination.index,
-        );
-        const newColumn = {
-          ...startCol,
-          contents: newContents,
-        };
-        setColumns({
-          ...columns,
-          [newColumn.id]: newColumn,
-        });
-      } else {
-        const itemToMove = selectedItems[startCol.id];
-        let startContents = startCol.contents;
+      const itemToMove = selectedItems[startCol.id];
 
-        if (itemToMove.length > 0) {
-          startContents = startCol.contents.filter(
-            (item) => !selectedItems[startCol.id].includes(item),
-          );
-        } else {
-          startCol.contents.splice(source.index, 1);
-        }
+      if (itemToMove.length > 0) {
+      } else {
+        const { dragGroup } = reorderSingleDrag({
+          startCol: startCol,
+          finishCol: finishCol,
+          source,
+          destination,
+          itemIdToMove: draggableId,
+        });
+
         const newStart = {
           ...startCol,
-          contents: startContents,
-        };
-
-        const finishContents = finishCol.contents;
-        if (itemToMove.length > 0) {
-          finishContents.splice(destination.index, 0, ...itemToMove);
-        } else {
-          finishContents.splice(destination.index, 0, draggableId);
-        }
-
-        const newFinish = {
-          ...finishCol,
-          contents: finishContents,
+          contents: dragGroup.updateStartCol,
         };
 
         setColumns({
           ...columns,
           [newStart.id]: newStart,
-          [newFinish.id]: newFinish,
         });
+
+        if (dragGroup.updateFinishCol) {
+          const newFinish = {
+            ...finishCol,
+            contents: dragGroup.updateFinishCol,
+          };
+
+          setColumns({
+            ...columns,
+            [newStart.id]: newStart,
+            [newFinish.id]: newFinish,
+          });
+        }
       }
+
       setSelectedItems(initialSelectedItems);
     },
     [columns, selectedItems],
