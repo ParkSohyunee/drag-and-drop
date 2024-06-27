@@ -17,7 +17,7 @@ export default function Item({
         ? "bg-blue-300 shadow-item"
         : "bg-red-300 shadow-item";
     } else {
-      bgColor = isSelected ? "bg-blue-300" : "bg-slate-300";
+      bgColor = isSelected ? "bg-orange-300" : "bg-slate-300";
     }
     return bgColor;
   };
