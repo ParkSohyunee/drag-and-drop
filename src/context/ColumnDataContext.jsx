@@ -42,8 +42,43 @@ export const ColumnDataProvider = ({ children }) => {
     });
   };
 
+  /**
+   * 컬럼에 아이템 삭제 기능 함수
+   */
+  const deleteItemCard = ({ columnId, itemId }) => {
+    const newItems = {};
+    for (let key in columns.items) {
+      if (key !== itemId) {
+        newItems[key] = columns.items[key];
+      }
+    }
+
+    const newColumnContents = columns[columnId].contents.filter(
+      (item) => item !== itemId,
+    );
+
+    return setColumns((prev) => {
+      const newColumn = {
+        ...prev[columnId],
+        contents: newColumnContents,
+      };
+      return {
+        ...prev,
+        [columnId]: newColumn,
+        items: newItems,
+      };
+    });
+  };
+
   return (
-    <ColumnDataContext.Provider value={{ columns, setColumns, addItemCard }}>
+    <ColumnDataContext.Provider
+      value={{
+        columns,
+        setColumns,
+        addItemCard,
+        deleteItemCard,
+      }}
+    >
       {children}
     </ColumnDataContext.Provider>
   );

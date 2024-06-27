@@ -11,33 +11,6 @@ export default function App() {
   const [startIndex, setStartIndex] = useState(null);
   const [selectedItems, setSelectedItems] = useState(initialSelectedItems);
 
-  const deleteItemCard = ({ columnId, itemId }) => {
-    // 아이템에서 해당 아이디 삭제
-    const newItems = {};
-    for (let key in columns.items) {
-      if (key !== itemId) {
-        newItems[key] = columns.items[key];
-      }
-    }
-
-    // 아이템 배열 업데이트
-    const newColumnContents = columns[columnId].contents.filter(
-      (item) => item !== itemId,
-    );
-
-    return setColumns((prev) => {
-      const newColumn = {
-        ...prev[columnId],
-        contents: newColumnContents,
-      };
-      return {
-        ...prev,
-        [columnId]: newColumn,
-        items: newItems,
-      };
-    });
-  };
-
   const onDragStart = useCallback(
     (start) => {
       const homeIndex = columnOrder.indexOf(start.source.droppableId);
@@ -156,13 +129,6 @@ export default function App() {
   return (
     <section>
       <DragDropContext onDragEnd={onDragEnd} onDragStart={onDragStart}>
-        <button
-          onClick={() =>
-            deleteItemCard({ columnId: "column-1", itemId: "item-5" })
-          }
-        >
-          컬럼1의 아이템 삭제
-        </button>
         <div className="flex gap-2 p-2">
           {columnOrder.map((order, index) => (
             <Column
