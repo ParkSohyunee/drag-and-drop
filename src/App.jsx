@@ -2,11 +2,12 @@ import React, { useState, useCallback } from "react";
 import { DragDropContext } from "react-beautiful-dnd";
 
 import Column from "./components/Column";
-import { columnOrder, initialData, initialSelectedItems } from "./data";
 import { reorderMultiDrag, reorderSingleDrag } from "./common/utils/reorder";
+import { useColumnDataContext } from "./context/ColumnDataContext";
+import { columnOrder, initialSelectedItems } from "./data";
 
 export default function App() {
-  const [columns, setColumns] = useState(initialData);
+  const { columns, setColumns } = useColumnDataContext();
   const [startIndex, setStartIndex] = useState(null);
   const [selectedItems, setSelectedItems] = useState(initialSelectedItems);
 
@@ -126,19 +127,21 @@ export default function App() {
   );
 
   return (
-    <DragDropContext onDragEnd={onDragEnd} onDragStart={onDragStart}>
-      <div className="flex">
-        {columnOrder.map((order, index) => (
-          <Column
-            key={order}
-            columnOrder={order}
-            columns={columns}
-            isDropDisabled={startIndex === 0 && index === 2}
-            selectedItems={selectedItems}
-            setSelectedItems={setSelectedItems}
-          />
-        ))}
-      </div>
-    </DragDropContext>
+    <section>
+      <DragDropContext onDragEnd={onDragEnd} onDragStart={onDragStart}>
+        <div className="flex gap-2 p-2">
+          {columnOrder.map((order, index) => (
+            <Column
+              key={order}
+              columnOrder={order}
+              columns={columns}
+              isDropDisabled={startIndex === 0 && index === 2}
+              selectedItems={selectedItems}
+              setSelectedItems={setSelectedItems}
+            />
+          ))}
+        </div>
+      </DragDropContext>
+    </section>
   );
 }
