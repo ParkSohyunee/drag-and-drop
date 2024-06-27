@@ -3,7 +3,7 @@ import { DragDropContext } from "react-beautiful-dnd";
 
 import Column from "./components/Column";
 import { columnOrder, initialData, initialSelectedItems } from "./data";
-import { reorderSingleDrag } from "./common/utils/reorder";
+import { reorderMultiDrag, reorderSingleDrag } from "./common/utils/reorder";
 
 export default function App() {
   const [columns, setColumns] = useState(initialData);
@@ -53,7 +53,24 @@ export default function App() {
 
       const itemToMove = selectedItems[startCol.id];
 
-      if (itemToMove.length > 0) {
+      if (itemToMove.length > 1) {
+        const { dragGroup } = reorderMultiDrag({
+          startCol,
+          finishCol,
+          source,
+          destination,
+          selectedItems: selectedItems[startCol.id],
+        });
+        console.log(dragGroup); // 삭제 예정
+        const newStart = {
+          ...startCol,
+          contents: dragGroup.updateStartCol,
+        };
+
+        setColumns({
+          ...columns,
+          [newStart.id]: newStart,
+        });
       } else {
         const { dragGroup } = reorderSingleDrag({
           startCol: startCol,

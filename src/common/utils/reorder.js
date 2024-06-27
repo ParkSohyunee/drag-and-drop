@@ -61,33 +61,45 @@ export const reorderSingleDrag = ({
   };
 };
 
-export const reorderMultiDrag = () => {};
+export const reorderMultiDrag = ({
+  startCol,
+  finishCol,
+  source,
+  destination,
+  selectedItems,
+}) => {
+  // 같은 컬럼 이동
+  if (startCol.id === finishCol.id) {
+    const reorderResult = startCol.contents.filter(
+      (item) => !selectedItems.includes(item),
+    );
 
-// 원래 코드
-// export const reorder = (list, selectedItems, startIndex, endIndex) => {
-//   let result = [...list];
+    const dragged = startCol.contents[source.index]; // 드래그 하는 아이템
 
-//   const reorderResult = result.filter((item) => !selectedItems.includes(item));
+    // 최종 드랍 위치를 계산하는 즉시 실행 함수
+    const insertAtIndex = (() => {
+      const destinationIndexOffset = selectedItems.reduce((acc, cur) => {
+        if (cur === dragged) {
+          return acc;
+        }
+        const index = startCol.contents.indexOf(cur);
+        if (index >= destination.index) {
+          return acc;
+        } else {
+          return acc + 1; // 선택한 아이템보다 앞에 놓을 경우
+        }
+      }, 0);
+      const result = destination.index - destinationIndexOffset;
+      return result;
+    })();
 
-//   if (selectedItems.length > 1) {
-//     const find = reorderResult.findIndex((item) => item === list[endIndex]);
-//     reorderResult.splice(find, 0, ...selectedItems);
-//     return reorderResult;
-//   } else {
-//     const [removed] = result.splice(startIndex, 1);
-//     result.splice(endIndex, 0, removed);
-//     return result;
-//   }
-// };
+    reorderResult.splice(insertAtIndex, 0, ...selectedItems);
 
-// let result = [...list];
-
-// const reorderResult = result.filter((item) => !selectedItems.includes(item));
-
-// if (selectedItems.length > 1) {
-//   const find = reorderResult.findIndex((item) => item === list[endIndex]);
-//   reorderResult.splice(find, 0, ...selectedItems);
-//   return reorderResult;
-// } else {
-//   return reorder(list, startIndex, endIndex);
-// }
+    return {
+      dragGroup: {
+        updateStartCol: reorderResult,
+        updateFinishCol: null,
+      },
+    };
+  }
+};
