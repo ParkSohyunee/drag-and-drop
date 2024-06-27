@@ -14,14 +14,14 @@ const reorder = (list, startIndex, endIndex) => {
 };
 
 /**
- * 싱글 드래그 이동 후 컬럼 item update 함수, 객체를 파라미터로 받음
- * 객체 안 param
+ * 싱글 드래그 이동 후 컬럼 item update 함수
  *
- * @param {object} startCol 드래그 시작 컬럼
- * @param {object} finishCol 드래그 도착 컬럼
- * @param {object} source 드래그 시작 위치
- * @param {object} destination 드래그 도착 위치
- * @param {string} itemIdToMove 이동할 아이템 draggableId
+ * @param {object} data
+ * @param {object} data.startCol 드래그 시작 컬럼
+ * @param {object} data.finishCol 드래그 도착 컬럼
+ * @param {object} data.source 드래그 시작 위치
+ * @param {object} data.destination 드래그 도착 위치
+ * @param {string} data.itemIdToMove 이동할 아이템 draggableId
  * @returns dragGroup
  */
 export const reorderSingleDrag = ({
@@ -62,7 +62,15 @@ export const reorderSingleDrag = ({
 };
 
 /**
- * 멀티 드래그 이동 후 컬럼 item update 함수, 객체를 파라미터로 받음
+ * 멀티 드래그 이동 후 컬럼 item update 함수
+ *
+ * @param {object} data
+ * @param {object} data.startCol 드래그 시작 컬럼
+ * @param {object} data.finishCol 드래그 도착 컬럼
+ * @param {object} data.source 드래그 시작 위치
+ * @param {object} data.destination 드래그 도착 위치
+ * @param {array} selectedItems 선택한 아이템 배열
+ * @returns dragGroup
  */
 export const reorderMultiDrag = ({
   startCol,
