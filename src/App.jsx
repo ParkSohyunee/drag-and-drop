@@ -53,7 +53,10 @@ export default function App() {
 
       const itemToMove = selectedItems[startCol.id];
 
-      if (itemToMove.length > 1) {
+      if (
+        itemToMove.length > 1 &&
+        selectedItems[startCol.id].includes(draggableId)
+      ) {
         const { dragGroup } = reorderMultiDrag({
           startCol,
           finishCol,
