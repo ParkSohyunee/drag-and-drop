@@ -2,6 +2,7 @@ import React from "react";
 import { Droppable } from "react-beautiful-dnd";
 
 import Item from "./Item";
+import { useColumnDataContext } from "../context/ColumnDataContext";
 
 export default function Column({
   columnOrder,
@@ -10,6 +11,8 @@ export default function Column({
   selectedItems,
   setSelectedItems,
 }) {
+  const { addItemCard } = useColumnDataContext();
+
   return (
     <div className="bg-slate-100 rounded-xl border p-3 h-full">
       <p className="font-bold text-slate-800 mb-2">
@@ -44,7 +47,7 @@ export default function Column({
           </div>
         )}
       </Droppable>
-      <button>+ Add a card</button>
+      <button onClick={() => addItemCard(columnOrder)}>+ Add a card</button>
     </div>
   );
 }

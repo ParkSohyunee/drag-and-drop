@@ -2,35 +2,14 @@ import React, { useState, useCallback } from "react";
 import { DragDropContext } from "react-beautiful-dnd";
 
 import Column from "./components/Column";
-import { columnOrder, initialData, initialSelectedItems } from "./data";
 import { reorderMultiDrag, reorderSingleDrag } from "./common/utils/reorder";
+import { useColumnDataContext } from "./context/ColumnDataContext";
+import { columnOrder, initialSelectedItems } from "./data";
 
 export default function App() {
-  const [columns, setColumns] = useState(initialData);
+  const { columns, setColumns } = useColumnDataContext();
   const [startIndex, setStartIndex] = useState(null);
   const [selectedItems, setSelectedItems] = useState(initialSelectedItems);
-
-  const handleAddItemCard = (columnId) => () => {
-    const currentItemCount = Object.keys(columns.items).length;
-    const newItemId = `item-${currentItemCount + 1}`;
-    const newItemInfo = {
-      id: newItemId,
-      content: `item ${currentItemCount + 1}`,
-    };
-
-    setColumns((prev) => {
-      const newItems = { ...prev.items, [newItemId]: newItemInfo };
-      const newColumn = {
-        ...prev[columnId],
-        contents: [...prev[columnId].contents, newItemId],
-      };
-      return {
-        ...prev,
-        [columnId]: newColumn,
-        items: newItems,
-      };
-    });
-  };
 
   const onDragStart = useCallback(
     (start) => {
@@ -150,9 +129,6 @@ export default function App() {
   return (
     <section>
       <DragDropContext onDragEnd={onDragEnd} onDragStart={onDragStart}>
-        <button onClick={handleAddItemCard("column-1")}>
-          컬럼1에 카드 추가
-        </button>
         <div className="flex gap-2 p-2">
           {columnOrder.map((order, index) => (
             <Column
