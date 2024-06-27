@@ -1,10 +1,9 @@
 import React from "react";
 import { Draggable } from "react-beautiful-dnd";
 
-import { items } from "../data";
-
 export default function Item({
   columnOrder,
+  allItems,
   item,
   index,
   selectedItems,
@@ -71,7 +70,7 @@ export default function Item({
           })}
           `}
         >
-          {items[item].content}
+          {allItems[item].content}
           {isDragging && selectedItems[columnOrder].includes(item) && (
             <div
               className={`

@@ -32,6 +32,7 @@ export default function Column({
             {columns[columnOrder].contents.map((item, index) => (
               <Item
                 key={item}
+                allItems={columns.items}
                 item={item}
                 columnOrder={columnOrder}
                 index={index}
@@ -43,6 +44,7 @@ export default function Column({
           </div>
         )}
       </Droppable>
+      <button>+ Add a card</button>
     </div>
   );
 }
